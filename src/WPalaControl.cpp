@@ -179,7 +179,7 @@ bool WPalaControl::publishHassDiscoveryToMqtt()
   if (!_mqttMan.connected())
     return false;
 
-  LOG_SERIAL.println(F("Publish Home Assistant Discovery data"));
+  LOG_SERIAL_PRINTLN(F("Publish Home Assistant Discovery data"));
 
   // variables
   JsonDocument jsonDoc;
@@ -2101,7 +2101,7 @@ bool WPalaControl::executePalaCmd(const String &cmd, String &strJson, bool publi
 
 void WPalaControl::publishTick()
 {
-  LOG_SERIAL.println(F("PublishTick"));
+  LOG_SERIAL_PRINTLN(F("PublishTick"));
 
   // if MQTT protocol is enabled and connected then publish Core, Wifi and WPalaControl status
   if (_ha.protocol == HA_PROTO_MQTT && _mqttMan.connected())
@@ -2385,7 +2385,7 @@ bool WPalaControl::appInit(bool reInit)
     _mqttMan.connect(_ha.mqtt.username, _ha.mqtt.password);
   }
 
-  LOG_SERIAL.println(F("Connecting to Stove..."));
+  LOG_SERIAL_PRINTLN(F("Connecting to Stove..."));
 
   Palazzetti::CommandResult cmdRes;
   cmdRes = _Pala.initialize(
@@ -2400,16 +2400,13 @@ bool WPalaControl::appInit(bool reInit)
 
   if (cmdRes == Palazzetti::CommandResult::OK)
   {
-    LOG_SERIAL.println(F("Stove connected"));
+    LOG_SERIAL_PRINTLN(F("Stove connected"));
     char SN[28];
     _Pala.getSN(&SN);
-    LOG_SERIAL.print(F("Stove Serial Number: "));
-    LOG_SERIAL.println(SN);
+    LOG_SERIAL_PRINTF_P(PSTR("Stove Serial Number: %s\n"), SN);
   }
   else
-  {
-    LOG_SERIAL.println(F("Stove connection failed"));
-  }
+    LOG_SERIAL_PRINTLN(F("Stove connection failed"));
 
   if (cmdRes == Palazzetti::CommandResult::OK)
     publishTick(); // if configuration changed, publish immediately
