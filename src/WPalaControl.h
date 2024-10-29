@@ -73,9 +73,9 @@ private:
   void mqttConnectedCallback(MQTTMan *mqttMan, bool firstConnection);
   void mqttDisconnectedCallback();
   void mqttCallback(char *topic, uint8_t *payload, unsigned int length);
-  void publishStoveConnectedToMqtt(bool stoveConnected);
-  bool publishDataToMqtt(const String &baseTopic, const String &palaCategory, const JsonDocument &jsonDoc);
-  bool publishHassDiscoveryToMqtt();
+  void mqttPublishStoveConnected(bool stoveConnected);
+  bool mqttPublishData(const String &baseTopic, const String &palaCategory, const JsonDocument &jsonDoc);
+  bool mqttPublishHassDiscovery();
   bool executePalaCmd(const String &cmd, String &strJson, bool publish = false);
 
   void publishTick();

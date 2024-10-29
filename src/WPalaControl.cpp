@@ -112,7 +112,7 @@ void WPalaControl::mqttCallback(char *topic, uint8_t *payload, unsigned int leng
   _mqttMan.publish(resTopic.c_str(), strJson.c_str());
 }
 
-void WPalaControl::publishStoveConnectedToMqtt(bool stoveConnected)
+void WPalaControl::mqttPublishStoveConnected(bool stoveConnected)
 {
   if (_mqttMan.connected() && _publishedStoveConnected != stoveConnected)
   {
@@ -123,7 +123,7 @@ void WPalaControl::publishStoveConnectedToMqtt(bool stoveConnected)
   }
 }
 
-bool WPalaControl::publishDataToMqtt(const String &baseTopic, const String &palaCategory, const JsonDocument &jsonDoc)
+bool WPalaControl::mqttPublishData(const String &baseTopic, const String &palaCategory, const JsonDocument &jsonDoc)
 {
   bool res = false;
   if (_mqttMan.connected())
@@ -174,7 +174,7 @@ bool WPalaControl::publishDataToMqtt(const String &baseTopic, const String &pala
   return res;
 }
 
-bool WPalaControl::publishHassDiscoveryToMqtt()
+bool WPalaControl::mqttPublishHassDiscovery()
 {
   if (!_mqttMan.connected())
     return false;
@@ -2041,7 +2041,7 @@ bool WPalaControl::executePalaCmd(const String &cmd, String &strJson, bool publi
 
     // if MQTT protocol is enabled then update connected topic to reflect stove connectivity
     if (_ha.protocol == HA_PROTO_MQTT)
-      publishStoveConnectedToMqtt(cmdSuccess == Palazzetti::CommandResult::OK);
+      mqttPublishStoveConnected(cmdSuccess == Palazzetti::CommandResult::OK);
 
     // if communication with stove was successful
     if (cmdSuccess == Palazzetti::CommandResult::OK)
@@ -2062,7 +2062,7 @@ bool WPalaControl::executePalaCmd(const String &cmd, String &strJson, bool publi
 
         if (_ha.protocol == HA_PROTO_MQTT && _haSendResult)
         {
-          _haSendResult &= publishDataToMqtt(baseTopic, palaCategory, jsonDoc);
+          _haSendResult &= mqttPublishData(baseTopic, palaCategory, jsonDoc);
         }
       }
     }
@@ -2644,7 +2644,7 @@ void WPalaControl::appRun()
     // if Home Assistant discovery enabled and publish is needed
     if (_ha.mqtt.hassDiscoveryEnabled && _needPublishHassDiscovery)
     {
-      if (publishHassDiscoveryToMqtt()) // publish discovery
+      if (mqttPublishHassDiscovery()) // publish discovery
       {
         _needPublishHassDiscovery = false;
         _needPublish = true; // force publishTick after discovery
