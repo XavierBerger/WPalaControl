@@ -8,8 +8,8 @@
 
 const char appDataPredefPassword[] PROGMEM = "ewcXoCt4HHjZUvY1";
 
-#include "data/status1.html.gz.h"
-#include "data/config1.html.gz.h"
+#include "data/status2.html.gz.h"
+#include "data/config2.html.gz.h"
 
 #include <Palazzetti.h>
 #include <WiFiUdp.h>
