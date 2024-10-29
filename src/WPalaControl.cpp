@@ -2635,7 +2635,7 @@ void WPalaControl::appRun()
 // Constructor
 WPalaControl::WPalaControl(char appId, String appName) : Application(appId, appName)
 {
-  _applicationList[Application1] = this;
+  _applicationList[CustomApp] = this;
 
   // TX/GPIO15 is pulled down and so block the stove bus by default...
   pinMode(15, OUTPUT); // set TX PIN to OUTPUT HIGH to unlock bus during WiFi connection
