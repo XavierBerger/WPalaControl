@@ -2309,38 +2309,7 @@ String WPalaControl::generateStatusJSON()
   // Home automation connection status
   if (_ha.protocol == HA_PROTO_MQTT)
   {
-    String hamqttstatus;
-    switch (_mqttMan.state())
-    {
-    case MQTT_CONNECTION_TIMEOUT:
-      hamqttstatus = F("Timed Out");
-      break;
-    case MQTT_CONNECTION_LOST:
-      hamqttstatus = F("Lost");
-      break;
-    case MQTT_CONNECT_FAILED:
-      hamqttstatus = F("Failed");
-      break;
-    case MQTT_CONNECTED:
-      hamqttstatus = F("Connected");
-      break;
-    case MQTT_CONNECT_BAD_PROTOCOL:
-      hamqttstatus = F("Bad Protocol Version");
-      break;
-    case MQTT_CONNECT_BAD_CLIENT_ID:
-      hamqttstatus = F("Incorrect ClientID ");
-      break;
-    case MQTT_CONNECT_UNAVAILABLE:
-      hamqttstatus = F("Server Unavailable");
-      break;
-    case MQTT_CONNECT_BAD_CREDENTIALS:
-      hamqttstatus = F("Bad Credentials");
-      break;
-    case MQTT_CONNECT_UNAUTHORIZED:
-      hamqttstatus = F("Connection Unauthorized");
-      break;
-    }
-    doc[F("hamqttstatus")] = hamqttstatus;
+    doc[F("hamqttstatus")] = _mqttMan.getStateString();
 
     if (_mqttMan.state() == MQTT_CONNECTED)
       doc[F("hamqttlastpublish")] = (_haSendResult ? F("OK") : F("Failed"));
