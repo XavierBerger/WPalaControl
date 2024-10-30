@@ -2112,9 +2112,9 @@ void WPalaControl::publishTick()
     baseTopic.remove(baseTopic.length() - 1);
 
     JsonDocument doc;
-    doc[F("Core")] = serialized(_applicationList[CoreApp]->getStatusJSON());
-    doc[F("Wifi")] = serialized(_applicationList[WifiManApp]->getStatusJSON());
-    doc[_appName] = serialized(getStatusJSON());
+    doc[getAppIdName(CoreApp)] = serialized(_applicationList[CoreApp]->getStatusJSON());
+    doc[getAppIdName(WifiManApp)] = serialized(_applicationList[WifiManApp]->getStatusJSON());
+    doc[getAppIdName(CustomApp)] = serialized(getStatusJSON());
 
     String strJson;
     serializeJson(doc, strJson);
@@ -2633,10 +2633,8 @@ void WPalaControl::appRun()
 
 //------------------------------------------
 // Constructor
-WPalaControl::WPalaControl(char appId, String appName) : Application(appId, appName)
+WPalaControl::WPalaControl() : Application(CustomApp)
 {
-  _applicationList[CustomApp] = this;
-
   // TX/GPIO15 is pulled down and so block the stove bus by default...
   pinMode(15, OUTPUT); // set TX PIN to OUTPUT HIGH to unlock bus during WiFi connection
   digitalWrite(15, HIGH);

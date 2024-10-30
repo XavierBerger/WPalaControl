@@ -92,7 +92,7 @@ private:
   void appRun();
 
 public:
-  WPalaControl(char appId, String fileName);
+  WPalaControl();
 };
 
 #endif
