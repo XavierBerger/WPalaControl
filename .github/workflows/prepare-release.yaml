@@ -34,17 +34,17 @@ jobs:
       - name: Get Versions
         id: versions
         run: |
-          APPLICATION1_MODEL=$(grep -oP '(?<=#define APPLICATION1_MODEL ").*(?=")'  ./src/Main.h)
-          echo "APPLICATION1_MODEL=${APPLICATION1_MODEL}" >> $GITHUB_ENV
-          PPLICATION1_MODEL=$(grep -oP '(?<=#define APPLICATION1_MODEL "W).*(?=")'  ./src/Main.h)
-          echo "PPLICATION1_MODEL=${PPLICATION1_MODEL}" >> $GITHUB_ENV
-          VERSION_NUMBER=$(grep -oP '(?<=#define VERSION_NUMBER ").*(?=")'  ./src/Main.h)
+          VERSION_NUMBER=$(awk -F'"' '/#define VERSION_NUMBER/ {print $2}' ./src/Main.h)
           echo "VERSION_NUMBER=${VERSION_NUMBER}" >> $GITHUB_ENV
 
-      - name: Rename Firmware
+      - name: Temporary Copy for old version update
         run: |
-          cp .pio/build/d1_mini/${{ env.APPLICATION1_MODEL }}.bin .pio/build/d1_mini/${{ env.APPLICATION1_MODEL }}.${{ env.VERSION_NUMBER }}.bin
-          cp .pio/build/d1_mini/${{ env.APPLICATION1_MODEL }}.bin .pio/build/d1_mini/Wireless${{ env.PPLICATION1_MODEL }}.${{ env.VERSION_NUMBER }}.bin
+          find .pio/build -type f -name 'W*.bin' -exec bash -c '
+            for file; do
+              new_file="${file/W/Wireless}"
+              cp "$file" "$new_file"
+            done
+          ' bash {} +
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v2
@@ -52,6 +52,4 @@ jobs:
           draft: true
           tag_name: "${{ env.VERSION_NUMBER }}"
           generate_release_notes: true
-          files: |
-            .pio/build/d1_mini/${{ env.APPLICATION1_MODEL }}.${{ env.VERSION_NUMBER }}.bin
-            .pio/build/d1_mini/Wireless${{ env.PPLICATION1_MODEL }}.${{ env.VERSION_NUMBER }}.bin
+          files: .pio/build/**/*.bin
