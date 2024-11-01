@@ -2433,7 +2433,7 @@ size_t WPalaControl::getHTMLContentSize(WebPageForPlaceHolder wp)
 
 //------------------------------------------
 // code to register web request answer to the web server
-void WPalaControl::appInitWebServer(WebServer &server, bool &shouldReboot, bool &pauseApplication)
+void WPalaControl::appInitWebServer(WebServer &server)
 {
   // Handle HTTP GET requests
   server.on(F("/cgi-bin/sendmsg.lua"), HTTP_GET, [this, &server]()
