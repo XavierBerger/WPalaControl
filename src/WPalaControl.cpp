@@ -56,26 +56,28 @@ void WPalaControl::myUSleep(unsigned long usecond) { delayMicroseconds(usecond);
 
 void WPalaControl::mqttConnectedCallback(MQTTMan *mqttMan, bool firstConnection)
 {
-
-  // Subscribe to needed topic
-  // prepare topic subscription
-  String subscribeTopic = _ha.mqtt.generic.baseTopic;
-
-  // Replace placeholders
-  MQTTMan::prepareTopic(subscribeTopic);
+  // Subscribe command topic --------------------------------
+  String cmdTopic = _ha.mqtt.generic.baseTopic;
+  MQTTMan::prepareTopic(cmdTopic);
 
   switch (_ha.mqtt.type) // switch on MQTT type
   {
   case HA_MQTT_GENERIC:
   case HA_MQTT_GENERIC_JSON:
   case HA_MQTT_GENERIC_CATEGORIZED:
-    subscribeTopic += F("cmd");
+    cmdTopic += F("cmd");
     break;
   }
 
   if (firstConnection)
-    mqttMan->publish(subscribeTopic.c_str(), ""); // make empty publish only for firstConnection
-  mqttMan->subscribe(subscribeTopic.c_str());
+    mqttMan->publish(cmdTopic.c_str(), ""); // make empty publish only for firstConnection
+  mqttMan->subscribe(cmdTopic.c_str());
+
+  // Subscribe to update/install topic -----------------------
+  String updateInstalltopic(_ha.mqtt.generic.baseTopic);
+  MQTTMan::prepareTopic(updateInstalltopic);
+  updateInstalltopic += F("update/install");
+  mqttMan->subscribe(updateInstalltopic.c_str());
 
   // raise flag to publish Home Assistant discovery data
   _needPublishHassDiscovery = true;
@@ -89,27 +91,84 @@ void WPalaControl::mqttDisconnectedCallback()
 
 void WPalaControl::mqttCallback(char *topic, uint8_t *payload, unsigned int length)
 {
-  // if topic is basetopic/cmd
-  // commented because only this topic is subscribed
+  // calculate command topic
+  String cmdTopic = _ha.mqtt.generic.baseTopic;
+  MQTTMan::prepareTopic(cmdTopic);
 
-  String cmd;
-  String strJson;
+  switch (_ha.mqtt.type) // switch on MQTT type
+  {
+  case HA_MQTT_GENERIC:
+  case HA_MQTT_GENERIC_JSON:
+  case HA_MQTT_GENERIC_CATEGORIZED:
+    cmdTopic += F("cmd");
+    break;
+  }
+  // if topic is command one
+  if (cmdTopic == topic)
+  {
+    String cmd;
+    String strJson;
 
-  // convert payload to String cmd
-  cmd.concat((char *)payload, length);
+    // convert payload to String cmd
+    cmd.concat((char *)payload, length);
 
-  // replace '+' by ' '
-  cmd.replace('+', ' ');
+    // replace '+' by ' '
+    cmd.replace('+', ' ');
 
-  // execute Palazzetti command
-  executePalaCmd(cmd, strJson, true);
+    // execute Palazzetti command
+    executePalaCmd(cmd, strJson, true);
 
-  // publish json result to MQTT
-  String baseTopic = _ha.mqtt.generic.baseTopic;
-  MQTTMan::prepareTopic(baseTopic);
-  String resTopic(baseTopic);
-  resTopic += F("result");
-  _mqttMan.publish(resTopic.c_str(), strJson.c_str());
+    // publish json result to MQTT
+    String baseTopic = _ha.mqtt.generic.baseTopic;
+    MQTTMan::prepareTopic(baseTopic);
+    String resTopic(baseTopic);
+    resTopic += F("result");
+    _mqttMan.publish(resTopic.c_str(), strJson.c_str());
+  }
+
+  // if topic ends with "/update/install"
+  if (String(topic).endsWith(F("/update/install")))
+  {
+    String version;
+    String retMsg;
+    unsigned long lastProgressPublish = 0;
+
+    // result topic is topic without the last 8 characters ("/install")
+    String resTopic(topic);
+    resTopic.remove(resTopic.length() - 8);
+
+    if (length > 10)
+      retMsg = F("Version is too long");
+    else
+    {
+      // convert payload to String
+      version.concat((char *)payload, length);
+
+      // Define the progress callback function
+      std::function<void(size_t, size_t)> progressCallback = [this, &resTopic, &lastProgressPublish](size_t progress, size_t total)
+      {
+        // if last progress publish is less than 1 second ago then return
+        if (millis() - lastProgressPublish < 1000)
+          return;
+        lastProgressPublish = millis();
+
+        uint8_t percent = (progress * 100) / total;
+        LOG_SERIAL_PRINTF_P(PSTR("Progress: %d%%\n"), percent);
+        String payload = String(F("{\"progress\":\"")) + percent + F("%\"}");
+        _mqttMan.publish(resTopic.c_str(), payload.c_str(), true);
+      };
+
+      SystemState::shouldReboot = updateFirmware(version.c_str(), retMsg, progressCallback);
+    }
+
+    if (SystemState::shouldReboot)
+      retMsg = F("{\"progress\":\"Update successful\"}");
+    else
+      retMsg = String(F("{\"progress\":\"Update failed: ")) + retMsg + F("\"}");
+
+    // publish result
+    _mqttMan.publish(resTopic.c_str(), retMsg.c_str(), true);
+  }
 }
 
 void WPalaControl::mqttPublishStoveConnected(bool stoveConnected)
@@ -185,7 +244,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   JsonDocument jsonDoc;
   String device, availability, payload;
   String baseTopic;
-  String uniqueIdPrefixWPalaControl, uniqueIdPrefixStove;
+  String uniqueIdPrefix, uniqueIdPrefixStove;
   String uniqueId;
   String topic;
 
@@ -193,31 +252,31 @@ bool WPalaControl::mqttPublishHassDiscovery()
   baseTopic = _ha.mqtt.generic.baseTopic;
   MQTTMan::prepareTopic(baseTopic);
 
-  // ---------- WPalaControl Device ----------
+  // ---------- Device ----------
 
-  // prepare unique id prefix for WPalaControl
-  uniqueIdPrefixWPalaControl = F("WPalaControl_");
-  uniqueIdPrefixWPalaControl += WiFi.macAddress();
-  uniqueIdPrefixWPalaControl.replace(":", "");
+  // prepare unique id prefix
+  uniqueIdPrefix = F(CUSTOM_APP_MODEL "_");
+  uniqueIdPrefix += WiFi.macAddress();
+  uniqueIdPrefix.replace(":", "");
 
-  // prepare WPalaControl device JSON
-  jsonDoc[F("configuration_url")] = F("http://wpalacontrol.local");
-  jsonDoc[F("identifiers")][0] = uniqueIdPrefixWPalaControl;
-  jsonDoc[F("manufacturer")] = F("Domochip");
-  jsonDoc[F("model")] = F("WPalaControl");
+  // prepare device JSON
+  jsonDoc[F("configuration_url")] = F("http://" CUSTOM_APP_MODEL ".local");
+  jsonDoc[F("identifiers")][0] = uniqueIdPrefix;
+  jsonDoc[F("manufacturer")] = F(CUSTOM_APP_MANUFACTURER);
+  jsonDoc[F("model")] = F(CUSTOM_APP_MODEL);
   jsonDoc[F("name")] = WiFi.getHostname();
   jsonDoc[F("sw_version")] = VERSION;
   serializeJson(jsonDoc, device); // serialize to device String
   jsonDoc.clear();                // clean jsonDoc
 
-  // ----- WPalaControl Entities -----
+  // ----- Entities -----
 
   //
   // Connectivity entity
   //
 
-  // prepare uniqueId, topic and payload for WPalaControl connectivity sensor
-  uniqueId = uniqueIdPrefixWPalaControl;
+  // prepare uniqueId, topic and payload for connectivity sensor
+  uniqueId = uniqueIdPrefix;
   uniqueId += F("_Connectivity");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
@@ -225,12 +284,12 @@ bool WPalaControl::mqttPublishHassDiscovery()
   topic += uniqueId;
   topic += F("/config");
 
-  // prepare payload for WPalaControl connectivity sensor
+  // prepare payload for connectivity sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
   jsonDoc[F("device_class")] = F("connectivity");
   jsonDoc[F("device")] = serialized(device);
   jsonDoc[F("entity_category")] = F("diagnostic");
-  jsonDoc[F("object_id")] = F("wpalacontrol_connectivity");
+  jsonDoc[F("object_id")] = F(CUSTOM_APP_MODEL "_connectivity");
   jsonDoc[F("state_topic")] = F("~/connected");
   jsonDoc[F("unique_id")] = uniqueId;
   jsonDoc[F("value_template")] = F("{{ iif(int(value) > 0, 'ON', 'OFF') }}");
@@ -291,7 +350,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   // ---------- Stove Device ----------
 
   // prepare unique id prefix for Stove
-  uniqueIdPrefixStove = F("WPalaControl_");
+  uniqueIdPrefixStove = F(CUSTOM_APP_MODEL "_");
   uniqueIdPrefixStove += SN;
 
   // prepare availability JSON for Stove entities
@@ -306,7 +365,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("model")] = String(MOD);
   jsonDoc[F("name")] = F("Stove");
   jsonDoc[F("sw_version")] = String(VER) + F(" (") + FWDATE + ')';
-  jsonDoc[F("via_device")] = uniqueIdPrefixWPalaControl;
+  jsonDoc[F("via_device")] = uniqueIdPrefix;
   serializeJson(jsonDoc, device); // serialize to device String
   jsonDoc.clear();                // clean jsonDoc
 
@@ -847,6 +906,113 @@ bool WPalaControl::mqttPublishHassDiscovery()
   }
 
   // TODO
+  return true;
+}
+
+bool WPalaControl::mqttPublishUpdate()
+{
+  if (!_mqttMan.connected())
+    return false;
+
+  // get update info from Core
+  String updateInfo = getLatestUpdateInfoJson();
+
+  String baseTopic;
+  String topic;
+
+  // prepare base topic
+  baseTopic = _ha.mqtt.generic.baseTopic;
+  MQTTMan::prepareTopic(baseTopic);
+
+  // This part of code is necessary because "payload_install" is not a template
+  // and we need to get the version to install pushed from Home Assistant
+  // so it is mandatory to update the Update entity each time we publish the update
+  // parse JSON
+  if (_ha.mqtt.hassDiscoveryEnabled)
+  {
+    JsonDocument doc;
+    JsonVariant jv;
+    DeserializationError error = deserializeJson(doc, updateInfo);
+    // if there is no error and latest_version is available
+    if (!error && (jv = doc[F("latest_version")]).is<const char *>())
+    {
+      // get version
+      char version[10] = {0};
+      strlcpy(version, jv.as<const char *>(), sizeof(version));
+
+      doc.clear(); // clean doc
+
+      // then publish updated Update autodiscovery
+
+      // variables
+      JsonDocument jsonDoc;
+      String device, availability, payload;
+
+      String uniqueIdPrefix;
+      String uniqueId;
+
+      // prepare unique id prefix
+      uniqueIdPrefix = F(CUSTOM_APP_MODEL "_");
+      uniqueIdPrefix += WiFi.macAddress();
+      uniqueIdPrefix.replace(":", "");
+
+      // ---------- Device ----------
+
+      // prepare device JSON
+      jsonDoc[F("configuration_url")] = F("http://" CUSTOM_APP_MODEL ".local");
+      jsonDoc[F("identifiers")][0] = uniqueIdPrefix;
+      jsonDoc[F("manufacturer")] = F(CUSTOM_APP_MANUFACTURER);
+      jsonDoc[F("model")] = F(CUSTOM_APP_MODEL);
+      jsonDoc[F("name")] = WiFi.getHostname();
+      jsonDoc[F("sw_version")] = VERSION;
+      serializeJson(jsonDoc, device); // serialize to device String
+      jsonDoc.clear();                // clean jsonDoc
+
+      // prepare availability JSON for entities
+      jsonDoc[F("topic")] = F("~/connected");
+      jsonDoc[F("value_template")] = F("{{ iif(int(value) > 0, 'online', 'offline') }}");
+      serializeJson(jsonDoc, availability); // serialize to availability String
+      jsonDoc.clear();                      // clean jsonDoc
+
+      // ----- Entities -----
+
+      //
+      // Update entity
+      //
+
+      // prepare uniqueId, topic and payload for update sensor
+      uniqueId = uniqueIdPrefix;
+      uniqueId += F("_Update");
+
+      topic = _ha.mqtt.hassDiscoveryPrefix;
+      topic += F("/update/");
+      topic += uniqueId;
+      topic += F("/config");
+
+      // prepare payload for update sensor
+      jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
+      jsonDoc[F("availability")] = serialized(availability);
+      jsonDoc[F("command_topic")] = F("~/update/install");
+      jsonDoc[F("device")] = serialized(device);
+      jsonDoc[F("device_class")] = F("firmware");
+      jsonDoc[F("entity_category")] = F("config");
+      jsonDoc[F("object_id")] = F(CUSTOM_APP_MODEL);
+      jsonDoc[F("payload_install")] = version;
+      jsonDoc[F("state_topic")] = F("~/update");
+      jsonDoc[F("unique_id")] = uniqueId;
+
+      jsonDoc.shrinkToFit();
+      serializeJson(jsonDoc, payload);
+
+      // publish
+      _mqttMan.publish(topic.c_str(), payload.c_str(), true);
+    }
+  }
+
+  // publish update info
+  topic = baseTopic + F("update");
+  _mqttMan.publish(topic.c_str(), updateInfo.c_str(), true);
+
   return true;
 }
 
@@ -2388,6 +2554,18 @@ bool WPalaControl::appInit(bool reInit)
                                      { palaControl->_needPublish = true; }, this);
 #endif
 
+  // flag to force publish update (init and reinit)
+  _needPublishUpdate = true;
+
+  // start publish update Ticker
+#ifdef ESP8266
+  _publishUpdateTicker.attach(86400, [this]()
+                              { this->_needPublishUpdate = true; });
+#else
+  _publishUpdateTicker.attach<typeof this>(86400, [](typeof this palaSensor)
+                                           { palaSensor->_needPublishUpdate = true; }, this);
+#endif
+
   // Start UDP Server
   _udpServer.begin(54549);
 
@@ -2610,15 +2788,15 @@ void WPalaControl::appRun()
   {
     _mqttMan.loop();
 
-    // if Home Assistant discovery enabled and publish is needed
-    if (_ha.mqtt.hassDiscoveryEnabled && _needPublishHassDiscovery)
+    // if Home Assistant discovery enabled and publish is needed (and publish is successful)
+    if (_ha.mqtt.hassDiscoveryEnabled && _needPublishHassDiscovery && mqttPublishHassDiscovery())
     {
-      if (mqttPublishHassDiscovery()) // publish discovery
-      {
-        _needPublishHassDiscovery = false;
-        _needPublish = true; // force publishTick after discovery
-      }
+      _needPublishHassDiscovery = false;
+      _needPublish = true; // force publishTick after discovery
     }
+
+    if (_needPublishUpdate && mqttPublishUpdate())
+      _needPublishUpdate = false;
   }
 
   if (_needPublish)
