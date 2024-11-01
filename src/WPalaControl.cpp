@@ -2777,7 +2777,7 @@ void WPalaControl::appInitWebServer(WebServer &server)
         server.send(200, F("text/json"), strJson); });
 
   // register EventSource
-  _eventSourceMan.initEventSourceServer(_appId, server);
+  _eventSourceMan.initEventSourceServer(getAppIdChar(_appId), server);
 }
 
 //------------------------------------------
