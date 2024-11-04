@@ -1,5 +1,5 @@
 ![GitHub Release](https://img.shields.io/github/v/release/Domochip/WPalaControl)
-![Home Assistant](https://img.shields.io/badge/home_assistant-2021.2-blue.svg?logo=homeassistant)
+![Home Assistant](https://img.shields.io/badge/home_assistant-2021.11-blue.svg?logo=homeassistant)
 
 # WPalaControl
 
@@ -36,26 +36,31 @@ If you have this control panel and/or controller in your stove, it's compatible.
 
 ## Connect
 
-⚠️ **You need to use a crossed RJ11 phone cable like this:** ⚠️  
+⚠️ **You need to use a crossed RJ11 phone cable to connect WPalaControl:** ⚠️  
 ![WPalaControl rj11](img/rj11-pinout.png)
 
-Most of stove have an RJ11/RJ12 connector for PalaControl connection.  
-If you don't have it, you need to cable it using a splitter to connect screen and PalaControl at the same time :  
-![WPalaControl cabling](img/cabling.png)
+If your stove has an accessible RJ12 connector from the outisde:  
+✅ You just need to connect the cable
 
-Splitter and additional cable can be found on Aliexpress (search for "6p6c splitter" and "rj12 cable").  
-The splitter should correspond to this small schematic :  
-![WPalaControl schematic-splitter](img/schematic-splitter.png)
+If there no visible RJ12 connector:  
+🔍 You'll need an additional cable and a splitter  
+➡️ More details in [Splitter Cabling documentation](SPLITTERCABLING.md)
 
 ## First Boot
 
-During First Boot, the ESP boot in Access Point Mode
+During First Boot, the WPalaControl creates its own wifi network (AP mode)  
+
+For firmware version **3.2.0 and higher**:  
+
+- Network SSID : `WPalaControl`
+- Password : `password`
+
+For version **3.1.x and lower**:  
 
 - Network SSID : `WirelessPalaControlXXXX`
 - Password : `PasswordPalaControl`
-- ESP URL : 👉 http://wpalacontrol.local 👈
 
-Connect to this network and then configure it.
+Connect to the network and then go to 👉 <http://wpalacontrol.local> 👈
 
 ## Configuration pages
 
@@ -88,7 +93,7 @@ It returns you useful informations about the module and the stove.
 - **Upload Period**: delay between refresh of stove information (in seconds)  
 - **Hostname,Port,Username,Password**: MQTT server infos (username and password are - optional)  
 - **Base Topic**: prefix used for WPalaControl topic structure  
-- **MQTT Type**: defines MQTT topics and data structure: 
+- **MQTT Type**: defines MQTT topics and data structure:  
   - **Generic**: publish raw values under the base topic (e.g. "{baseTopic}/T1" = "*20.00*")
   - **Generic JSON**: publish values JSON to "category" topic under base topic (e.g. "{baseTopic}/TMPS" = "*{"INFO":{"CMD":"GET TMPS","RSP":"OK......*")
   - **Generic Categorized**: publish raw values to "category" topic under base topic (e.g. "{baseTopic}/TMPS/T1" = "*20.00*")
@@ -96,15 +101,16 @@ It returns you useful informations about the module and the stove.
 
 ### Firmware
 
-It allows you to flash a new firmware version using `WPalaControl.*.bin` file:  
-![firmware screenshot](img/firmware.png)
+It allows you to flash a new firmware version directly from GitHub releases or using `WPalaControl.*.bin` or `WirelessPalaControl.*.bin` file:  
+![firmware screenshot](img/firmware.png)  
+If latest version info doesn't appears, please ensure the module has Internet access and/or DNS configured if IP address is static
 
 ## Use it
 
 ### HTTP
 
 Natively, HTTP GET request can be sent directly to the module.  
-Syntax:  **http://wpalacontrol.local/cgi-bin/sendmsg.lua?cmd={command}**
+Syntax:  **<http://wpalacontrol.local/cgi-bin/sendmsg.lua?cmd={command}>**
 
 ### MQTT
 
@@ -112,7 +118,7 @@ Commands can be sent via MQTT to %BaseTopic%**/cmd** topic once MQTT is configur
 Execution result is:
 
 - published following the configured MQTT Type
-- published on %BaseTopic%**/result** in JSON format 
+- published on %BaseTopic%**/result** in JSON format
 
 Module connection status is published to %BaseTopic%**/connected**:
 
@@ -172,7 +178,6 @@ Module connection status is published to %BaseTopic%**/connected**:
 
 ⏲️: Published automatically  
 ✨: WPalaControl specific commands
-
 
 ### Description
 
