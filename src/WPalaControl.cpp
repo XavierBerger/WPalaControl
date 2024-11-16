@@ -651,6 +651,33 @@ bool WPalaControl::mqttPublishHassDiscovery()
   publishJson(topic, jsonDoc);
 
   //
+  // Flue Gas temperature entity (T3)
+  //
+
+  uniqueId = uniqueIdPrefixStove + F("_FlueGasTemp");
+
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
+
+  // prepare payload for Stove flue gas temperature sensor
+  jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
+  jsonDoc[F("availability")] = serialized(availability);
+  jsonDoc[F("device")] = serialized(device);
+  jsonDoc[F("device_class")] = F("temperature");
+  jsonDoc[F("enabled_by_default")] = false;
+  jsonDoc[F("name")] = F("Flue Gas Temperature");
+  jsonDoc[F("object_id")] = F("stove_fluegastemp");
+  jsonDoc[F("suggested_display_precision")] = 1;
+  jsonDoc[F("state_class")] = F("measurement");
+  jsonDoc[F("unique_id")] = uniqueId;
+  jsonDoc[F("unit_of_measurement")] = F("°C");
+  jsonDoc[F("state_topic")] = tempProbeTopicListArray[2][_ha.mqtt.type];
+  if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
+    jsonDoc[F("value_template")] = F("{{ value_json.T3 }}");
+
+  // publish
+  publishJson(topic, jsonDoc);
+
+  //
   // Pellet consumption entity
   //
 
