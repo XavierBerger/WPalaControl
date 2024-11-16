@@ -243,6 +243,19 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   LOG_SERIAL_PRINTLN(F("Publish Home Assistant Discovery data"));
 
+  // Helper lambda to publish JSON payload
+  auto publishJson = [&](const String &topic, JsonDocument &jsonDoc)
+  {
+    jsonDoc.shrinkToFit();
+
+    String payload;
+    serializeJson(jsonDoc, payload);
+
+    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
+
+    jsonDoc.clear();
+  };
+
   // variables
   JsonDocument jsonDoc;
   String device, availability, payload;
@@ -296,15 +309,9 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("unique_id")] = uniqueId;
   jsonDoc[F("value_template")] = F("{{ iif(int(value) > 0, 'ON', 'OFF') }}");
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
+  publishJson(topic, jsonDoc);
 
-  // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  // clean device JSON before switching to Stove entities
   device = "";
 
   // ---------- Get Stove Device data ----------
@@ -415,15 +422,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("unique_id")] = uniqueId;
   jsonDoc[F("value_template")] = F("{{ iif(int(value) > 1, 'ON', 'OFF') }}");
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
-
   // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  publishJson(topic, jsonDoc);
 
   //
   // Status entity
@@ -448,15 +448,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
   if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
     jsonDoc[F("value_template")] = F("{{ value_json.STATUS }}");
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
-
   // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  publishJson(topic, jsonDoc);
 
   //
   // Status Text entity
@@ -483,15 +476,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
   else if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
     jsonDoc[F("value_template")] = F("{% set ns = namespace(found=false) %}{% set statusList=[([0],'Off'),([1],'Off Timer'),([2],'Test Fire'),([3,4,5],'Ignition'),([6],'Burning'),([9],'Cool'),([10],'Fire Stop'),([11],'Clean Fire'),([12],'Cool'),([239],'MFDoor Alarm'),([240],'Fire Error'),([241],'Chimney Alarm'),([243],'Grate Error'),([244],'NTC2 Alarm'),([245],'NTC3 Alarm'),([247],'Door Alarm'),([248],'Pressure Alarm'),([249],'NTC1 Alarm'),([250],'TC1 Alarm'),([252],'Gas Alarm'),([253],'No Pellet Alarm')] %}{% for num,text in statusList %}{% if int(value_json.STATUS) in num %}{{ text }}{% set ns.found = true %}{% break %}{% endif %}{% endfor %}{% if not ns.found %}Unkown STATUS code {{ value_json.STATUS }}{% endif %}");
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
-
   // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  publishJson(topic, jsonDoc);
 
   //
   // Thermostat entity
@@ -577,15 +563,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("temperature_unit")] = F("C");
   jsonDoc[F("unique_id")] = uniqueId;
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
-
   // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  publishJson(topic, jsonDoc);
 
   // T1 probe config is fixed for hydro type stove
   if (isHydroType)
@@ -622,15 +601,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
     else if (_ha.mqtt.type == HA_MQTT_GENERIC_CATEGORIZED)
       jsonDoc[F("state_topic")] = F("~/TMPS/T1");
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -684,15 +656,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
   if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
     jsonDoc[F("value_template")] = String(F("{{ value_json.T")) + (char)('1' + probeNumber) + F(" }}");
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
-
   // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  publishJson(topic, jsonDoc);
 
   //
   // Pellet consumption entity
@@ -720,15 +685,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
   if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
     jsonDoc[F("value_template")] = F("{{ value_json.PQT }}");
 
-  jsonDoc.shrinkToFit();
-  serializeJson(jsonDoc, payload);
-
   // publish
-  _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-  // clean
-  jsonDoc.clear();
-  payload = "";
+  publishJson(topic, jsonDoc);
 
   //
   // OnOff entity
@@ -762,15 +720,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
     else if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
       jsonDoc[F("value_template")] = F("{{ iif(int(value_json.STATUS) > 1 and int(value_json.STATUS) != 10, 'ON', 'OFF') }}");
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -804,15 +755,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
     if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
       jsonDoc[F("value_template")] = F("{{ value_json.SETP }}");
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -845,15 +789,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
     if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
       jsonDoc[F("value_template")] = F("{{ value_json.PWR }}");
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -902,15 +839,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
     if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
       jsonDoc[F("value_template")] = F("{{ value_json.F2L }}");
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -945,15 +875,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
     else if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
       jsonDoc[F("value_template")] = F("{{ iif(int(value_json.F2L) == 7, 'ON', 'OFF') }}");
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -999,15 +922,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
       jsonDoc[F("mode")] = F("slider");
     }
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   //
@@ -1053,15 +969,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
       jsonDoc[F("mode")] = F("slider");
     }
 
-    jsonDoc.shrinkToFit();
-    serializeJson(jsonDoc, payload);
-
     // publish
-    _mqttMan.publish(topic.c_str(), payload.c_str(), true);
-
-    // clean
-    jsonDoc.clear();
-    payload = "";
+    publishJson(topic, jsonDoc);
   }
 
   return true;
