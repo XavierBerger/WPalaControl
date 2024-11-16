@@ -243,6 +243,18 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   LOG_SERIAL_PRINTLN(F("Publish Home Assistant Discovery data"));
 
+  // Helper lambda to prepare entity topic
+  auto prepareEntityTopic = [&](const String &prefix, const String &type, const String &uniqueId)
+  {
+    String topic = prefix;
+    topic += F("/");
+    topic += type;
+    topic += F("/");
+    topic += uniqueId;
+    topic += F("/config");
+    return topic;
+  };
+
   // Helper lambda to publish JSON payload
   auto publishJson = [&](const String &topic, JsonDocument &jsonDoc)
   {
@@ -294,10 +306,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   // prepare uniqueId, topic and payload for connectivity sensor
   uniqueId = uniqueIdPrefix + F("_Connectivity");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/binary_sensor/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("binary_sensor"), uniqueId);
 
   // prepare payload for connectivity sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -407,10 +416,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   uniqueId = uniqueIdPrefixStove + F("_Connectivity");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/binary_sensor/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("binary_sensor"), uniqueId);
 
   // prepare payload for Stove connectivity sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -431,10 +437,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   uniqueId = uniqueIdPrefixStove + F("_STATUS");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/sensor/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
 
   // prepare payload for Stove status sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -457,10 +460,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   uniqueId = uniqueIdPrefixStove + F("_STATUS_Text");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/sensor/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
 
   // prepare payload for Stove status text sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -490,10 +490,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   uniqueId = uniqueIdPrefixStove + F("_Thermostat");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/climate/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("climate"), uniqueId);
 
   // prepare payload for Stove thermostat
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -575,10 +572,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
     uniqueId = uniqueIdPrefixStove + F("_SupplyWaterTemp");
 
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += F("/sensor/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
 
     // prepare payload for Stove supply water temperature sensor
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -633,10 +627,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   uniqueId = uniqueIdPrefixStove + '_' + tempSensorNameList[tempSensorNameIndex] + F("_Temp");
   uniqueId.replace(F(" "), "");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/sensor/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
 
   // prepare payload for Stove main temperature sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -665,10 +656,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   uniqueId = uniqueIdPrefixStove + F("_PQT");
 
-  topic = _ha.mqtt.hassDiscoveryPrefix;
-  topic += F("/sensor/");
-  topic += uniqueId;
-  topic += F("/config");
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
 
   // prepare payload for Stove pellet consumption sensor
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -696,10 +684,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   {
     uniqueId = uniqueIdPrefixStove + F("_ON_OFF");
 
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += F("/switch/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("switch"), uniqueId);
 
     // prepare payload for Stove onoff switch
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -732,10 +717,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   {
     uniqueId = uniqueIdPrefixStove + F("_SETP");
 
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += F("/number/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("number"), uniqueId);
 
     // prepare payload for Stove setpoint number
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -767,10 +749,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   {
     uniqueId = uniqueIdPrefixStove + F("_PWR");
 
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += F("/number/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("number"), uniqueId);
 
     // prepare payload for Stove power number
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -801,10 +780,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   {
     uniqueId = uniqueIdPrefixStove + F("_RFAN");
 
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += F("/number/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("number"), uniqueId);
 
     // prepare payload for Stove room fan
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -851,10 +827,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   {
     uniqueId = uniqueIdPrefixStove + F("_RFAN_Auto");
 
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += F("/switch/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("switch"), uniqueId);
 
     // prepare payload for Stove room fan auto mode
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -888,10 +861,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
     uniqueId = uniqueIdPrefixStove + F("_FAN3");
 
     // entity type depends on Min and Max value of FAN3
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += ifFan3SwitchEntity ? F("/switch/") : F("/number/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, ifFan3SwitchEntity ? F("/switch/") : F("/number/"), uniqueId);
 
     // prepare payload for Stove fan3 number
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
@@ -935,10 +905,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
     uniqueId = uniqueIdPrefixStove + F("_FAN4");
 
     // entity type depends on Min and Max value of FAN4
-    topic = _ha.mqtt.hassDiscoveryPrefix;
-    topic += ifFan4SwitchEntity ? F("/switch/") : F("/number/");
-    topic += uniqueId;
-    topic += F("/config");
+    topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, ifFan4SwitchEntity ? F("/switch/") : F("/number/"), uniqueId);
 
     // prepare payload for Stove fan4 number
     jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
