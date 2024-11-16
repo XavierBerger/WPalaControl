@@ -378,6 +378,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
       {F("~/T4"), F("~/TMPS"), F("~/TMPS/T4")},
       {F("~/T5"), F("~/TMPS"), F("~/TMPS/T5")}};
   const __FlashStringHelper *pqtTopicList[] = {F("~/PQT"), F("~/CNTR"), F("~/CNTR/PQT")};
+  const __FlashStringHelper *serviceTimeTopicList[] = {F("~/SERVICETIME"), F("~/CNTR"), F("~/CNTR/SERVICETIME")};
   const __FlashStringHelper *setpTopicList[] = {F("~/SETP"), F("~/SETP"), F("~/SETP/SETP")};
   const __FlashStringHelper *pwrTopicList[] = {F("~/PWR"), F("~/POWR"), F("~/POWR/PWR")};
   const __FlashStringHelper *f2lTopicList[] = {F("~/F2L"), F("~/FAND"), F("~/FAND/F2L")};
@@ -702,6 +703,29 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   // publish
   publishJson(topic, jsonDoc);
+
+  //
+  // Service time counter entity
+  //
+
+  uniqueId = uniqueIdPrefixStove + F("_ServiceTimeCounter");
+
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
+
+  // prepare payload for Stove service time counter sensor
+  jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
+  jsonDoc[F("availability")] = serialized(availability);
+  jsonDoc[F("device")] = serialized(device);
+  jsonDoc[F("device_class")] = F("duration");
+  jsonDoc[F("icon")] = F("mdi:account-wrench-outline");
+  jsonDoc[F("name")] = F("Service Time Counter");
+  jsonDoc[F("object_id")] = F("stove_servicetimecounter");
+  jsonDoc[F("state_class")] = F("total_increasing");
+  jsonDoc[F("state_topic")] = serviceTimeTopicList[_ha.mqtt.type];
+  jsonDoc[F("unique_id")] = uniqueId;
+  jsonDoc[F("unit_of_measurement")] = F("h");
+  if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
+    jsonDoc[F("value_template")] = F("{{ value_json.SERVICETIME }}");
 
   //
   // OnOff entity
