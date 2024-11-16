@@ -521,13 +521,13 @@ bool WPalaControl::mqttPublishHassDiscovery()
     jsonDoc[F("fan_mode_state_topic")] = f2lTopicList[_ha.mqtt.type];
 
     JsonArray fan_modes = jsonDoc["fan_modes"].to<JsonArray>();
-    fan_modes.add("0");
+    fan_modes.add("off");
     fan_modes.add("1");
     fan_modes.add("2");
     fan_modes.add("3");
     fan_modes.add("4");
     fan_modes.add("5");
-    fan_modes.add("6");
+    fan_modes.add("high");
     if (isAirType && hasFanAuto)
       fan_modes.add("auto");
   }
