@@ -279,8 +279,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   //
 
   // prepare uniqueId, topic and payload for connectivity sensor
-  uniqueId = uniqueIdPrefix;
-  uniqueId += F("_Connectivity");
+  uniqueId = uniqueIdPrefix + F("_Connectivity");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/binary_sensor/");
@@ -399,8 +398,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   // Connectivity entity
   //
 
-  uniqueId = uniqueIdPrefixStove;
-  uniqueId += F("_Connectivity");
+  uniqueId = uniqueIdPrefixStove + F("_Connectivity");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/binary_sensor/");
@@ -431,8 +429,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   // Status entity
   //
 
-  uniqueId = uniqueIdPrefixStove;
-  uniqueId += F("_STATUS");
+  uniqueId = uniqueIdPrefixStove + F("_STATUS");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/sensor/");
@@ -465,8 +462,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   // Status Text entity
   //
 
-  uniqueId = uniqueIdPrefixStove;
-  uniqueId += F("_STATUS_Text");
+  uniqueId = uniqueIdPrefixStove + F("_STATUS_Text");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/sensor/");
@@ -506,8 +502,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   if (isHydroType && (UICONFIG == 1 || UICONFIG == 3 || UICONFIG == 4)) // for Hydro which are in a Config controlling Water temperature
     probeNumber = 0;                                                    // T1
 
-  uniqueId = uniqueIdPrefixStove;
-  uniqueId += F("_Thermostat");
+  uniqueId = uniqueIdPrefixStove + F("_Thermostat");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/climate/");
@@ -599,8 +594,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
     // Supply Water temperature entity
     //
 
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_SupplyWaterTemp");
+    uniqueId = uniqueIdPrefixStove + F("_SupplyWaterTemp");
 
     topic = _ha.mqtt.hassDiscoveryPrefix;
     topic += F("/sensor/");
@@ -664,11 +658,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
       tempSensorNameIndex = 2; // Tank Water
   }
 
-  uniqueId = uniqueIdPrefixStove;
-  uniqueId += '_';
-  uniqueId += tempSensorNameList[tempSensorNameIndex];
+  uniqueId = uniqueIdPrefixStove + '_' + tempSensorNameList[tempSensorNameIndex] + F("_Temp");
   uniqueId.replace(F(" "), "");
-  uniqueId += F("Temp");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/sensor/");
@@ -707,8 +698,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   // Pellet consumption entity
   //
 
-  uniqueId = uniqueIdPrefixStove;
-  uniqueId += F("_PQT");
+  uniqueId = uniqueIdPrefixStove + F("_PQT");
 
   topic = _ha.mqtt.hassDiscoveryPrefix;
   topic += F("/sensor/");
@@ -746,8 +736,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (hasOnOff)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_ON_OFF");
+    uniqueId = uniqueIdPrefixStove + F("_ON_OFF");
 
     topic = _ha.mqtt.hassDiscoveryPrefix;
     topic += F("/switch/");
@@ -790,8 +779,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (hasSetPoint)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_SETP");
+    uniqueId = uniqueIdPrefixStove + F("_SETP");
 
     topic = _ha.mqtt.hassDiscoveryPrefix;
     topic += F("/number/");
@@ -833,8 +821,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (hasPower)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_PWR");
+    uniqueId = uniqueIdPrefixStove + F("_PWR");
 
     topic = _ha.mqtt.hassDiscoveryPrefix;
     topic += F("/number/");
@@ -875,8 +862,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (hasRoomFan)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_RFAN");
+    uniqueId = uniqueIdPrefixStove + F("_RFAN");
 
     topic = _ha.mqtt.hassDiscoveryPrefix;
     topic += F("/number/");
@@ -933,8 +919,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (isAirType && hasFanAuto)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_RFAN_Auto");
+    uniqueId = uniqueIdPrefixStove + F("_RFAN_Auto");
 
     topic = _ha.mqtt.hassDiscoveryPrefix;
     topic += F("/switch/");
@@ -977,8 +962,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (hasFan3)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_FAN3");
+    uniqueId = uniqueIdPrefixStove + F("_FAN3");
 
     // entity type depends on Min and Max value of FAN3
     topic = _ha.mqtt.hassDiscoveryPrefix;
@@ -1032,8 +1016,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   if (hasFan4)
   {
-    uniqueId = uniqueIdPrefixStove;
-    uniqueId += F("_FAN4");
+    uniqueId = uniqueIdPrefixStove + F("_FAN4");
 
     // entity type depends on Min and Max value of FAN4
     topic = _ha.mqtt.hassDiscoveryPrefix;
