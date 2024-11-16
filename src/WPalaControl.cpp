@@ -270,7 +270,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
 
   // variables
   JsonDocument jsonDoc;
-  String device, availability, payload;
+  String device, availability;
   String baseTopic;
   String uniqueIdPrefix, uniqueIdPrefixStove;
   String uniqueId;
