@@ -379,6 +379,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
       {F("~/T5"), F("~/TMPS"), F("~/TMPS/T5")}};
   const __FlashStringHelper *pqtTopicList[] = {F("~/PQT"), F("~/CNTR"), F("~/CNTR/PQT")};
   const __FlashStringHelper *serviceTimeTopicList[] = {F("~/SERVICETIME"), F("~/CNTR"), F("~/CNTR/SERVICETIME")};
+  const __FlashStringHelper *feederTopicList[] = {F("~/FDR"), F("~/POWR"), F("~/POWR/FDR")};
   const __FlashStringHelper *setpTopicList[] = {F("~/SETP"), F("~/SETP"), F("~/SETP/SETP")};
   const __FlashStringHelper *pwrTopicList[] = {F("~/PWR"), F("~/POWR"), F("~/POWR/PWR")};
   const __FlashStringHelper *f2lTopicList[] = {F("~/F2L"), F("~/FAND"), F("~/FAND/F2L")};
@@ -726,6 +727,30 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("unit_of_measurement")] = F("h");
   if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
     jsonDoc[F("value_template")] = F("{{ value_json.SERVICETIME }}");
+
+  //
+  // Feeder entity
+  //
+
+  uniqueId = uniqueIdPrefixStove + F("_Feeder");
+
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
+
+  // prepare payload for Stove feeder sensor
+  jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
+  jsonDoc[F("availability")] = serialized(availability);
+  jsonDoc[F("device")] = serialized(device);
+  jsonDoc[F("enabled_by_default")] = false;
+  jsonDoc[F("entity_category")] = F("diagnostic");
+  jsonDoc[F("name")] = F("Feeder");
+  jsonDoc[F("object_id")] = F("stove_feeder");
+  jsonDoc[F("state_topic")] = feederTopicList[_ha.mqtt.type];
+  jsonDoc[F("unique_id")] = uniqueId;
+  if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
+    jsonDoc[F("value_template")] = F("{{ value_json.FDR }}");
+
+  // publish
+  publishJson(topic, jsonDoc);
 
   //
   // OnOff entity
