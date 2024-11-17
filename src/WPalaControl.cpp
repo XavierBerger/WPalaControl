@@ -642,7 +642,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
   String objectIdSuffix = tempSensorNameList[tempSensorNameIndex];
   objectIdSuffix.replace(F(" "), "");
   objectIdSuffix.toLowerCase();
-  jsonDoc[F("object_id")] = String(F("stove_")) + objectIdSuffix;
+  jsonDoc[F("object_id")] = String(F("stove_")) + objectIdSuffix + F("temp");
   jsonDoc[F("suggested_display_precision")] = 1;
   jsonDoc[F("state_class")] = F("measurement");
   jsonDoc[F("unique_id")] = uniqueId;
