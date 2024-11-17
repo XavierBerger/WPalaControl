@@ -730,6 +730,9 @@ bool WPalaControl::mqttPublishHassDiscovery()
   if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
     jsonDoc[F("value_template")] = F("{{ value_json.SERVICETIME }}");
 
+  // publish
+  publishJson(topic, jsonDoc);
+
   //
   // Feeder entity
   //
