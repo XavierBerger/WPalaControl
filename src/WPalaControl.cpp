@@ -628,7 +628,7 @@ bool WPalaControl::mqttPublishHassDiscovery()
       tempSensorNameIndex = 2; // Tank Water
   }
 
-  uniqueId = uniqueIdPrefixStove + '_' + tempSensorNameList[tempSensorNameIndex] + F("_Temp");
+  uniqueId = uniqueIdPrefixStove + '_' + tempSensorNameList[tempSensorNameIndex] + F("Temp");
   uniqueId.replace(F(" "), "");
 
   topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("sensor"), uniqueId);
