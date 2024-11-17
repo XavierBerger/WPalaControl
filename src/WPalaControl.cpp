@@ -726,8 +726,10 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("state_topic")] = serviceTimeTopicList[_ha.mqtt.type];
   jsonDoc[F("unique_id")] = uniqueId;
   jsonDoc[F("unit_of_measurement")] = F("h");
-  if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
-    jsonDoc[F("value_template")] = F("{{ value_json.SERVICETIME }}");
+  if (_ha.mqtt.type == HA_MQTT_GENERIC || _ha.mqtt.type == HA_MQTT_GENERIC_CATEGORIZED)
+    jsonDoc[F("value_template")] = F("{{ value.split(':')[0] }}");
+  else if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
+    jsonDoc[F("value_template")] = F("{{ value_json.SERVICETIME.split(':')[0] }}");
 
   // publish
   publishJson(topic, jsonDoc);
