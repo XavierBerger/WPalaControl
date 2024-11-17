@@ -719,7 +719,6 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
   jsonDoc[F("availability")] = serialized(availability);
   jsonDoc[F("device")] = serialized(device);
-  jsonDoc[F("device_class")] = F("duration");
   jsonDoc[F("icon")] = F("mdi:account-wrench-outline");
   jsonDoc[F("name")] = F("Service Time Counter");
   jsonDoc[F("object_id")] = F("stove_servicetimecounter");
