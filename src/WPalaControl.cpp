@@ -779,9 +779,9 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("state_topic")] = dpTargetTopicList[_ha.mqtt.type];
   jsonDoc[F("unit_of_measurement")] = F("mPa");
   if (_ha.mqtt.type == HA_MQTT_GENERIC || _ha.mqtt.type == HA_MQTT_GENERIC_CATEGORIZED)
-    jsonDoc[F("value_template")] = F("{{ iif(int(value) > 0x7FFF, int(value) - 0x10000, int(value)) * 1000 / 60 }}");
+    jsonDoc[F("value_template")] = F("{{ (iif(int(value) > 0x7FFF, int(value) - 0x10000, int(value)) * 1000 / 60) | round }}");
   else if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
-    jsonDoc[F("value_template")] = F("{{ iif(int(value_json.DP_TARGET) > 0x7FFF, int(value_json.DP_TARGET) - 0x10000, int(value_json.DP_TARGET)) * 1000 /60 }}");
+    jsonDoc[F("value_template")] = F("{{ (iif(int(value_json.DP_TARGET) > 0x7FFF, int(value_json.DP_TARGET) - 0x10000, int(value_json.DP_TARGET)) * 1000 /60) | round }}");
 
   // publish
   publishJson(topic, jsonDoc);
@@ -808,9 +808,9 @@ bool WPalaControl::mqttPublishHassDiscovery()
   jsonDoc[F("state_topic")] = dpTopicList[_ha.mqtt.type];
   jsonDoc[F("unit_of_measurement")] = F("mPa");
   if (_ha.mqtt.type == HA_MQTT_GENERIC || _ha.mqtt.type == HA_MQTT_GENERIC_CATEGORIZED)
-    jsonDoc[F("value_template")] = F("{{ iif(int(value) > 0x7FFF, int(value) - 0x10000, int(value)) * 1000 / 60 }}");
+    jsonDoc[F("value_template")] = F("{{ (iif(int(value) > 0x7FFF, int(value) - 0x10000, int(value)) * 1000 / 60) | round }}");
   else if (_ha.mqtt.type == HA_MQTT_GENERIC_JSON)
-    jsonDoc[F("value_template")] = F("{{ iif(int(value_json.DP_PRESS) > 0x7FFF, int(value_json.DP_PRESS) - 0x10000, int(value_json.DP_PRESS)) * 1000 / 60 }}");
+    jsonDoc[F("value_template")] = F("{{ (iif(int(value_json.DP_PRESS) > 0x7FFF, int(value_json.DP_PRESS) - 0x10000, int(value_json.DP_PRESS)) * 1000 / 60) | round }}");
 
   // publish
   publishJson(topic, jsonDoc);
