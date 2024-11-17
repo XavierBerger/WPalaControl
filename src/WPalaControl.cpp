@@ -534,7 +534,8 @@ bool WPalaControl::mqttPublishHassDiscovery()
       fan_modes.add("auto");
   }
 
-  jsonDoc[F("max_temp")] = SPLMAX;
+  // Adjust max_temp for stove with air temperature setPoint, goal is to center the range around 19°C (Does someone really wants its room at 51°C ...)
+  jsonDoc[F("max_temp")] = (isHydroType && (UICONFIG == 1 || UICONFIG == 3 || UICONFIG == 4)) ? SPLMAX : SPLMIN + 2 * (19 - SPLMIN);
   jsonDoc[F("min_temp")] = SPLMIN;
   jsonDoc[F("mode_command_template")] = F("CMD+{{ iif(value == 'off', 'OFF', 'ON') }}");
   jsonDoc[F("mode_command_topic")] = cmdTopic;
