@@ -37,7 +37,11 @@ To determine if your stove is compatible with WPalaControl, look for the followi
 
 ## Connect
 
-⚠️ **You need to use a crossed RJ11 phone cable to connect WPalaControl:** ⚠️  
+⚠️ **Before connecting, please check that you are using the correct cable**  
+For Hardware V1.x: please use a **Crossed** cable  
+For Hardware V2.x: please use a **Straight** cable  
+_(Hardware version is written on the box and on the PCB)_
+
 ![WPalaControl rj11](img/rj11-pinout.png)
 
 ✅If your stove has an accessible RJ12 connector, simply connect the cable.  
