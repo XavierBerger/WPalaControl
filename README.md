@@ -115,7 +115,7 @@ Ensure the module has Internet access and/or DNS configured if IP address is sta
 
 Natively, HTTP GET request can be sent directly to the module.  
 
-```http
+```
 http://wpalacontrol.local/cgi-bin/sendmsg.lua?cmd={command}
 ```
 
