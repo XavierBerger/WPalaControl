@@ -1,2 +1,5 @@
 .pio
 .vscode
+schematic/production
+schematic/jlcpcb
+schematic/fabrication-toolkit-options.json

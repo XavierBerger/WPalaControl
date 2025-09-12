@@ -193,7 +193,8 @@
       "track_widths": [
         0.0,
         0.4,
-        0.6
+        0.6,
+        1.175
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -245,12 +246,7 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [
-      [
-        "lib_symbol_mismatch|1143000|419100|54b5b7cb-890f-4466-8ed2-e10cfe402aea|00000000-0000-0000-0000-000000000000|||",
-        "+3.3V has been define as Power Input"
-      ]
-    ],
+    "erc_exclusions": [],
     "meta": {
       "version": 0
     },
@@ -655,6 +651,24 @@
           "group_by": false,
           "label": "Description",
           "name": "Description",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "JlcPosOffset",
+          "name": "JlcPosOffset",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pins",
+          "name": "Sim.Pins",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "JlcRotOffset",
+          "name": "JlcRotOffset",
           "show": false
         }
       ],
