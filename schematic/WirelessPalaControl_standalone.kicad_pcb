@@ -153,7 +153,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -908,7 +908,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1544,7 +1544,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C84256"
+		(property "LCSC" "C2297"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2796,7 +2796,7 @@
 				)
 			)
 		)
-		(property "Value" "2K"
+		(property "Value" "1K"
 			(at 0 1.65 90)
 			(layer "F.Fab")
 			(uuid "1069bcce-930a-4930-b9f2-fe69c494af06")
@@ -2833,7 +2833,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17604"
+		(property "LCSC" "C17513"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2847,7 +2847,7 @@
 			)
 		)
 		(property ki_fp_filters "R_*")
-		(path "/faad16f9-ebd7-422a-b5c9-dc81580ffd0f")
+		(path "/0ddd3aee-c2e0-4a5b-a4b9-fd813b05c3ea")
 		(sheetname "/")
 		(sheetfile "WirelessPalaControl_standalone.kicad_sch")
 		(attr smd)
@@ -2967,7 +2967,7 @@
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.208333)
-			(net 8 "/GPIO1")
+			(net 12 "/GPIO2")
 			(pintype "passive")
 			(uuid "76cc4478-4a2c-47a0-8a26-a84671cba22d")
 		)
@@ -2976,7 +2976,7 @@
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.208333)
-			(net 12 "/GPIO2")
+			(net 8 "/GPIO1")
 			(pintype "passive")
 			(uuid "04763d71-ceb7-413d-ba01-d3937ae644ee")
 		)
@@ -4015,7 +4015,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4534,7 +4534,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5715,7 +5715,7 @@
 		(path "/71210f49-5dbb-4659-852d-9762839b2609")
 		(sheetname "/")
 		(sheetfile "WirelessPalaControl_standalone.kicad_sch")
-		(attr through_hole exclude_from_pos_files)
+		(attr through_hole exclude_from_pos_files exclude_from_bom)
 		(fp_line
 			(start 1.33 1.33)
 			(end 1.33 0)
@@ -6053,7 +6053,7 @@
 		(path "/54b5b7cb-890f-4466-8ed2-e10cfe402aea")
 		(sheetname "/")
 		(sheetfile "WirelessPalaControl_standalone.kicad_sch")
-		(attr through_hole exclude_from_pos_files)
+		(attr through_hole exclude_from_pos_files exclude_from_bom)
 		(fp_line
 			(start 1.33 -1.27)
 			(end 1.33 -19.08)

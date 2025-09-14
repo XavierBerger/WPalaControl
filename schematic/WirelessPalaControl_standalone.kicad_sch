@@ -2551,7 +2551,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "V3.0 - Standalone version - Powered by the stove"
+	(text "V3.1 - Standalone version - Powered by the stove"
 		(exclude_from_sim no)
 		(at 94.488 21.082 0)
 		(effects
@@ -4419,7 +4419,7 @@
 		(dnp no)
 		(uuid "07f36287-5be9-46e0-aa98-d3b80d9c09c9")
 		(property "Reference" "R5"
-			(at 146.05 45.72 90)
+			(at 146.05 46.228 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4480,6 +4480,82 @@
 			(project "WirelessPalaControl"
 				(path "/7b732a5c-181e-4123-b888-9221491b7bcc"
 					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 146.05 43.18 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0ddd3aee-c2e0-4a5b-a4b9-fd813b05c3ea")
+		(property "Reference" "R4"
+			(at 146.05 41.148 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1K"
+			(at 146.05 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 146.05 41.402 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 146.05 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 146.05 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C17513"
+			(at 146.05 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ab675eb0-8f6a-498f-a6cc-92df77d693aa")
+		)
+		(pin "2"
+			(uuid "221a88c6-95ce-4600-ae06-7d7aee4911e7")
+		)
+		(instances
+			(project "WirelessPalaControl_standalone"
+				(path "/7b732a5c-181e-4123-b888-9221491b7bcc"
+					(reference "R4")
 					(unit 1)
 				)
 			)
@@ -5074,7 +5150,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 247.65 86.36 90)
 			(effects
 				(font
@@ -5104,7 +5180,7 @@
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "54b5b7cb-890f-4466-8ed2-e10cfe402aea")
@@ -5325,7 +5401,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C49678"
+		(property "LCSC" "C440198"
 			(at 73.66 137.16 0)
 			(effects
 				(font
@@ -5402,7 +5478,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C84256"
+		(property "LCSC" "C2297"
 			(at 158.75 121.92 0)
 			(effects
 				(font
@@ -5701,7 +5777,7 @@
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -5999,7 +6075,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C49678"
+		(property "LCSC" "C440198"
 			(at 34.29 137.16 0)
 			(effects
 				(font
@@ -6146,7 +6222,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C84256"
+		(property "LCSC" "C2296"
 			(at 173.99 121.92 0)
 			(effects
 				(font
@@ -6656,7 +6732,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 227.33 123.19 90)
 			(effects
 				(font
@@ -6946,7 +7022,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 227.33 86.36 90)
 			(effects
 				(font
@@ -7431,7 +7507,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C17513"
+		(property "LCSC" "C17414"
 			(at 247.65 123.19 90)
 			(effects
 				(font
@@ -7520,82 +7596,6 @@
 			(project "WirelessPalaControl"
 				(path "/7b732a5c-181e-4123-b888-9221491b7bcc"
 					(reference "JP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 146.05 43.18 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "faad16f9-ebd7-422a-b5c9-dc81580ffd0f")
-		(property "Reference" "R4"
-			(at 146.05 40.64 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "2K"
-			(at 146.05 43.18 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 146.05 44.958 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 146.05 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 146.05 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" "C17604"
-			(at 146.05 43.18 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4ad097f2-1f26-4d7d-ac65-2df2e218b357")
-		)
-		(pin "2"
-			(uuid "eeaa0483-7ca6-496c-a479-a1c6fad16a38")
-		)
-		(instances
-			(project "WirelessPalaControl"
-				(path "/7b732a5c-181e-4123-b888-9221491b7bcc"
-					(reference "R4")
 					(unit 1)
 				)
 			)
