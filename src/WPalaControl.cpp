@@ -1083,6 +1083,29 @@ bool WPalaControl::mqttPublishHassDiscovery()
     publishJson(topic, jsonDoc);
   }
 
+  //
+  // Set Time entity
+  //
+
+  uniqueId = uniqueIdPrefixStove + F("_SET_TIME");
+
+  topic = prepareEntityTopic(_ha.mqtt.hassDiscoveryPrefix, F("button"), uniqueId);
+
+  // prepare payload for Stove set time button
+  jsonDoc[F("~")] = baseTopic.substring(0, baseTopic.length() - 1); // remove ending '/'
+  jsonDoc[F("availability")] = serialized(availability);
+  jsonDoc[F("command_template")] = F("SET+TIME+{{ now().strftime('%Y-%m-%d+%H:%M:%S') }}");
+  jsonDoc[F("command_topic")] = cmdTopic;
+  jsonDoc[F("device")] = serialized(device);
+  jsonDoc[F("entity_category")] = F("diagnostic");
+  jsonDoc[F("icon")] = F("mdi:clock-outline");
+  jsonDoc[F("name")] = F("Set Time");
+  jsonDoc[F("object_id")] = F("stove_set_time");
+  jsonDoc[F("unique_id")] = uniqueId;
+
+  // publish
+  publishJson(topic, jsonDoc);
+
   return true;
 }
 
